@@ -8,6 +8,7 @@
 
 #import "ASAlbumListController.h"
 #import "ASAlbumCustomCell.h"
+#import "ASPhotoGridController.h"
 @import Photos;
 
 @interface ASAlbumListController ()<UITableViewDataSource, UITableViewDelegate, PHPhotoLibraryChangeObserver>
@@ -61,6 +62,28 @@ static const float ListRowHeight = 89.f;
 #pragma mark -- UITableViewDelegate
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     
+    ASPhotoGridController *gridViewController = [[ASPhotoGridController alloc] init];
+    
+    gridViewController.delegate = self.delegate;
+    
+    PHFetchResult *fetchResult = self.sectionFetchResults[indexPath.section];
+    
+    if (indexPath.section == 0) {
+        gridViewController.assetsFetchResults = fetchResult;
+    } else {
+        // 获取选择行的PHAssetCollection
+        NSArray *sections = self.sectionFetchResults[indexPath.section];
+        if (!sections || sections.count < indexPath.row) return;
+        PHCollection *collection = sections[indexPath.row];
+        if (![collection isKindOfClass:[PHAssetCollection class]]) return;
+        
+        PHAssetCollection *assetCollection = (PHAssetCollection *)collection;
+        PHFetchResult *assetsFetchResult = [PHAsset fetchAssetsInAssetCollection:assetCollection options:nil];
+        
+        gridViewController.assetsFetchResults = assetsFetchResult;
+    }
+    
+    [self.navigationController pushViewController:gridViewController animated:YES];
 }
 
 #pragma mark -- UITableViewDataSource

@@ -17,6 +17,8 @@
 		1885D2CE1D8541E700DDAE0C /* ASAlbumListController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1885D2CD1D8541E700DDAE0C /* ASAlbumListController.m */; };
 		1885D2D11D85431500DDAE0C /* ASAlbumCustomCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 1885D2D01D85431500DDAE0C /* ASAlbumCustomCell.m */; };
 		1885D2D41D855BEA00DDAE0C /* ASImagePickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1885D2D31D855BEA00DDAE0C /* ASImagePickerController.m */; };
+		1885D2D81D86937C00DDAE0C /* ASPhotoGridController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1885D2D71D86937C00DDAE0C /* ASPhotoGridController.m */; };
+		1885D2DB1D8693A300DDAE0C /* ASPhotoGridCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 1885D2DA1D8693A300DDAE0C /* ASPhotoGridCell.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -49,6 +51,10 @@
 		1885D2D01D85431500DDAE0C /* ASAlbumCustomCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ASAlbumCustomCell.m; sourceTree = "<group>"; };
 		1885D2D21D855BEA00DDAE0C /* ASImagePickerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASImagePickerController.h; sourceTree = "<group>"; };
 		1885D2D31D855BEA00DDAE0C /* ASImagePickerController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ASImagePickerController.m; sourceTree = "<group>"; };
+		1885D2D61D86937C00DDAE0C /* ASPhotoGridController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASPhotoGridController.h; sourceTree = "<group>"; };
+		1885D2D71D86937C00DDAE0C /* ASPhotoGridController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ASPhotoGridController.m; sourceTree = "<group>"; };
+		1885D2D91D8693A300DDAE0C /* ASPhotoGridCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASPhotoGridCell.h; sourceTree = "<group>"; };
+		1885D2DA1D8693A300DDAE0C /* ASPhotoGridCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ASPhotoGridCell.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -98,8 +104,12 @@
 				1885D2D31D855BEA00DDAE0C /* ASImagePickerController.m */,
 				1885D2CC1D8541E700DDAE0C /* ASAlbumListController.h */,
 				1885D2CD1D8541E700DDAE0C /* ASAlbumListController.m */,
+				1885D2D61D86937C00DDAE0C /* ASPhotoGridController.h */,
+				1885D2D71D86937C00DDAE0C /* ASPhotoGridController.m */,
 				1885D2CF1D85431500DDAE0C /* ASAlbumCustomCell.h */,
 				1885D2D01D85431500DDAE0C /* ASAlbumCustomCell.m */,
+				1885D2D91D8693A300DDAE0C /* ASPhotoGridCell.h */,
+				1885D2DA1D8693A300DDAE0C /* ASPhotoGridCell.m */,
 				1885D2B01D8541B500DDAE0C /* Main.storyboard */,
 				1885D2B31D8541B500DDAE0C /* Assets.xcassets */,
 				1885D2B51D8541B500DDAE0C /* LaunchScreen.storyboard */,
@@ -226,10 +236,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1885D2DB1D8693A300DDAE0C /* ASPhotoGridCell.m in Sources */,
 				1885D2AF1D8541B500DDAE0C /* ViewController.m in Sources */,
 				1885D2AC1D8541B500DDAE0C /* AppDelegate.m in Sources */,
 				1885D2A91D8541B500DDAE0C /* main.m in Sources */,
 				1885D2D41D855BEA00DDAE0C /* ASImagePickerController.m in Sources */,
+				1885D2D81D86937C00DDAE0C /* ASPhotoGridController.m in Sources */,
 				1885D2CE1D8541E700DDAE0C /* ASAlbumListController.m in Sources */,
 				1885D2D11D85431500DDAE0C /* ASAlbumCustomCell.m in Sources */,
 			);
@@ -360,6 +372,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = "高仿UIImagePickerController/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "dev.AlanSim.--UIImagePickerController";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -371,6 +384,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = "高仿UIImagePickerController/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "dev.AlanSim.--UIImagePickerController";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -420,6 +434,7 @@
 				1885D2C81D8541B500DDAE0C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		1885D2C91D8541B500DDAE0C /* Build configuration list for PBXNativeTarget "高仿UIImagePickerControllerTests" */ = {
 			isa = XCConfigurationList;
@@ -428,6 +443,7 @@
 				1885D2CB1D8541B500DDAE0C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

@@ -7,7 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "ASPhotoGridController.h"
 
 @interface ASImagePickerController : UINavigationController
+
+@property (weak ,nonatomic) id<ASImagePickerControllerDelegate, UINavigationControllerDelegate> delegate;
 
 @end

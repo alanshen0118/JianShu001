@@ -7,7 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "ASPhotoGridController.h"
 
 @interface ASAlbumListController : UIViewController
+
+@property (strong, nonatomic) id<ASImagePickerControllerDelegate> delegate;
 
 @end

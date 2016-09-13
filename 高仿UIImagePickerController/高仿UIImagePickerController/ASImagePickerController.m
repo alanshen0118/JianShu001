@@ -14,19 +14,13 @@
 @end
 
 @implementation ASImagePickerController
-
-- (instancetype)init
-{
-    self = [super initWithRootViewController:[[ASAlbumListController alloc] init]];
-    if (self) {
-        
-    }
-    return self;
-}
+@dynamic delegate;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+    ASAlbumListController *albumListController = [[ASAlbumListController alloc] init];
+    albumListController.delegate = self.delegate;
+    self.viewControllers = @[albumListController];
 }
 
 - (void)didReceiveMemoryWarning {

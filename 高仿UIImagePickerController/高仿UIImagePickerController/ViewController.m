@@ -9,7 +9,9 @@
 #import "ViewController.h"
 #import "ASImagePickerController.h"
 
-@interface ViewController ()
+@interface ViewController ()<ASImagePickerControllerDelegate, UINavigationControllerDelegate>
+
+@property (weak, nonatomic) IBOutlet UIScrollView *scrollView;
 
 @end
 
@@ -21,8 +23,24 @@
 }
 
 - (IBAction)chooseAssets:(id)sender {
-    
-    [self presentViewController:[[ASImagePickerController alloc] init] animated:YES completion:nil];
+    ASImagePickerController *imagePicker = [[ASImagePickerController alloc] init];
+    imagePicker.delegate = self;
+    [self presentViewController:imagePicker animated:YES completion:nil];
+}
+
+- (void)as_didFinishPickingImageData:(NSArray *)imageDatas {
+    CGFloat currentY = 0.f;
+    for (UIImageView *imageView in self.scrollView.subviews) {
+        [imageView removeFromSuperview];
+    }
+    for (NSData *data in imageDatas) {
+        UIImage *image = [UIImage imageWithData:data];
+        UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
+        imageView.frame = CGRectMake(0, currentY, 100, 100);
+        currentY += CGRectGetHeight(imageView.frame) + 10.f;
+        self.scrollView.contentSize = CGSizeMake(CGRectGetWidth([UIScreen mainScreen].bounds), currentY);
+        [self.scrollView addSubview:imageView];
+    }
 }
 
 - (void)didReceiveMemoryWarning {

@@ -17,8 +17,11 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="HQc-S6-VA1">
+                                <rect key="frame" x="0.0" y="20" width="600" height="580"/>
+                            </scrollView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Oy2-oM-vPI">
-                                <rect key="frame" x="248.5" y="285" width="103" height="30"/>
+                                <rect key="frame" x="248" y="285" width="103" height="30"/>
                                 <state key="normal" title="Choose Assets"/>
                                 <connections>
                                     <action selector="chooseAssets:" destination="BYZ-38-t0r" eventType="touchUpInside" id="GJe-h3-xbv"/>
@@ -27,10 +30,17 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
+                            <constraint firstAttribute="trailing" secondItem="HQc-S6-VA1" secondAttribute="trailing" id="2kf-EI-i1P"/>
+                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="HQc-S6-VA1" secondAttribute="bottom" id="EyU-i7-IWz"/>
                             <constraint firstItem="Oy2-oM-vPI" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="Fnx-a0-eev"/>
                             <constraint firstItem="Oy2-oM-vPI" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="Ivf-Ph-6j4"/>
+                            <constraint firstItem="HQc-S6-VA1" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="hyt-0I-tIc"/>
+                            <constraint firstItem="HQc-S6-VA1" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" id="oPr-Bg-J3H"/>
                         </constraints>
                     </view>
+                    <connections>
+                        <outlet property="scrollView" destination="HQc-S6-VA1" id="gFd-zl-jFw"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
