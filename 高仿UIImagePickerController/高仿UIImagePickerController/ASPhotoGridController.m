@@ -13,6 +13,10 @@
 
 @property (strong, nonatomic) UICollectionView *collectionView;
 
+@property (nonatomic, strong) PHCachingImageManager *imageManager;
+
+@property CGRect previousPreheatRect;
+
 @end
 
 @implementation ASPhotoGridController
@@ -33,17 +37,102 @@ static CGSize AssetGridThumbnailSize;
     CGSize cellSize = ((UICollectionViewFlowLayout *)self.collectionView.collectionViewLayout).itemSize;
     AssetGridThumbnailSize = CGSizeMake(cellSize.width * scale, cellSize.height * scale);
     
+    self.imageManager = [[PHCachingImageManager alloc] init];
+    [self resetCachedAssets];
+    
 }
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    
+    // 可见区域刷新缓存
+    [self updateCachedAssets];
+}
+
 
 - (void)dealloc {
     //销毁观察相册变化的观察者
     [[PHPhotoLibrary sharedPhotoLibrary] unregisterChangeObserver:self];
 }
 
-#pragma mark - public method
-- (void)customPageViews {
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"select" style:UIBarButtonItemStylePlain target:self action:@selector(e__confirmImagePickerAction)];
-    [self.view addSubview:self.collectionView];
+#pragma mark - Asset Caching
+- (void)resetCachedAssets {
+    [self.imageManager stopCachingImagesForAllAssets];
+    self.previousPreheatRect = CGRectZero;
+}
+
+- (void)updateCachedAssets {
+    BOOL isViewVisible = [self isViewLoaded] && [[self view] window] != nil;
+    if (!isViewVisible) { return; }
+    
+    // 预加载区域是可显示区域的两倍
+    CGRect preheatRect = self.collectionView.bounds;
+    preheatRect = CGRectInset(preheatRect, 0.0f, -0.5f * CGRectGetHeight(preheatRect));
+    
+    // 比较是否显示的区域与之前预加载的区域有不同
+    CGFloat delta = ABS(CGRectGetMidY(preheatRect) - CGRectGetMidY(self.previousPreheatRect));
+    if (delta > CGRectGetHeight(self.collectionView.bounds) / 3.0f) {
+        
+        // 区分资源分别操作
+        NSMutableArray *addedIndexPaths = [NSMutableArray array];
+        NSMutableArray *removedIndexPaths = [NSMutableArray array];
+        
+        [self computeDifferenceBetweenRect:self.previousPreheatRect andRect:preheatRect removedHandler:^(CGRect removedRect) {
+            NSArray *indexPaths = [self indexPathsForElementsInCollectionView:self.collectionView rect:removedRect];
+            [removedIndexPaths addObjectsFromArray:indexPaths];
+        } addedHandler:^(CGRect addedRect) {
+            NSArray *indexPaths = [self indexPathsForElementsInCollectionView:self.collectionView rect:addedRect];
+            [addedIndexPaths addObjectsFromArray:indexPaths];
+        }];
+        
+        NSArray *assetsToStartCaching = [self assetsAtIndexPaths:addedIndexPaths];
+        NSArray *assetsToStopCaching = [self assetsAtIndexPaths:removedIndexPaths];
+        
+        // 更新缓存
+        [self.imageManager startCachingImagesForAssets:assetsToStartCaching
+                                            targetSize:AssetGridThumbnailSize
+                                           contentMode:PHImageContentModeAspectFill
+                                               options:nil];
+        [self.imageManager stopCachingImagesForAssets:assetsToStopCaching
+                                           targetSize:AssetGridThumbnailSize
+                                          contentMode:PHImageContentModeAspectFill
+                                              options:nil];
+        
+        // 存储预加载矩形已供比较
+        self.previousPreheatRect = preheatRect;
+    }
+}
+
+- (void)computeDifferenceBetweenRect:(CGRect)oldRect andRect:(CGRect)newRect removedHandler:(void (^)(CGRect removedRect))removedHandler addedHandler:(void (^)(CGRect addedRect))addedHandler {
+    if (CGRectIntersectsRect(newRect, oldRect)) {
+        CGFloat oldMaxY = CGRectGetMaxY(oldRect);
+        CGFloat oldMinY = CGRectGetMinY(oldRect);
+        CGFloat newMaxY = CGRectGetMaxY(newRect);
+        CGFloat newMinY = CGRectGetMinY(newRect);
+        
+        if (newMaxY > oldMaxY) {
+            CGRect rectToAdd = CGRectMake(newRect.origin.x, oldMaxY, newRect.size.width, (newMaxY - oldMaxY));
+            addedHandler(rectToAdd);
+        }
+        
+        if (oldMinY > newMinY) {
+            CGRect rectToAdd = CGRectMake(newRect.origin.x, newMinY, newRect.size.width, (oldMinY - newMinY));
+            addedHandler(rectToAdd);
+        }
+        
+        if (newMaxY < oldMaxY) {
+            CGRect rectToRemove = CGRectMake(newRect.origin.x, newMaxY, newRect.size.width, (oldMaxY - newMaxY));
+            removedHandler(rectToRemove);
+        }
+        
+        if (oldMinY < newMinY) {
+            CGRect rectToRemove = CGRectMake(newRect.origin.x, oldMinY, newRect.size.width, (newMinY - oldMinY));
+            removedHandler(rectToRemove);
+        }
+    } else {
+        addedHandler(newRect);
+        removedHandler(oldRect);
+    }
 }
 
 - (NSArray *)assetsAtIndexPaths:(NSArray *)indexPaths {
@@ -58,6 +147,13 @@ static CGSize AssetGridThumbnailSize;
     return assets;
 }
 
+
+#pragma mark - public method
+- (void)customPageViews {
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Select" style:UIBarButtonItemStylePlain target:self action:@selector(e__confirmImagePickerAction)];
+    [self.view addSubview:self.collectionView];
+}
+
 - (NSArray *)indexPathsFromIndexes:(NSIndexSet *)indexSet section:(NSUInteger)section {
     NSMutableArray *indexPaths = [NSMutableArray arrayWithCapacity:indexSet.count];
     [indexSet enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL *stop) {
@@ -66,7 +162,16 @@ static CGSize AssetGridThumbnailSize;
     return indexPaths;
 }
 
-
+- (NSArray *)indexPathsForElementsInCollectionView:(UICollectionView *)collection rect:(CGRect)rect {
+    NSArray *allLayoutAttributes = [collection.collectionViewLayout layoutAttributesForElementsInRect:rect];
+    if (allLayoutAttributes.count == 0) { return nil; }
+    NSMutableArray *indexPaths = [NSMutableArray arrayWithCapacity:allLayoutAttributes.count];
+    for (UICollectionViewLayoutAttributes *layoutAttributes in allLayoutAttributes) {
+        NSIndexPath *indexPath = layoutAttributes.indexPath;
+        [indexPaths addObject:indexPath];
+    }
+    return indexPaths;
+}
 
 #pragma mark - event response(e__method)
 - (void)e__confirmImagePickerAction {
@@ -125,10 +230,15 @@ static CGSize AssetGridThumbnailSize;
                 }
             } completion:NULL];
         }
-        
+        [self resetCachedAssets];
     });
 }
 
+#pragma mark -- UIScrollViewDelegate
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+    [self updateCachedAssets];
+}
 
 #pragma mark -- UICollectionViewDataSource
 
@@ -143,7 +253,7 @@ static CGSize AssetGridThumbnailSize;
     cell.representedAssetIdentifier = asset.localIdentifier;
     
     // 请求图片
-    [[PHImageManager defaultManager] requestImageForAsset:asset
+    [self.imageManager requestImageForAsset:asset
                                  targetSize:AssetGridThumbnailSize
                                 contentMode:PHImageContentModeDefault
                                     options:nil
